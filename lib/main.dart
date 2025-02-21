@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 import 'package:video_player/video_player.dart';
 
 void main() {
@@ -31,17 +32,42 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final SpeechToText _speechToText = SpeechToText();
+  bool _speechEnabled = false;
+  String _wordSpoken = '';
   late VideoPlayerController _controller;
 
   @override
   void initState() {
     super.initState();
+    initSpeech();
     _controller = VideoPlayerController.asset('assets/video.mp4')
       ..initialize().then((_) {
         _controller.play();
         _controller.setLooping(true);
         setState(() {});
       });
+  }
+
+  void initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+    setState(() {});
+  }
+
+  void _startListening() async {
+    await _speechToText.listen(onResult: _onSpeechResult);
+    setState(() {});
+  }
+
+  void _onSpeechResult(result) {
+    setState(() {
+      _wordSpoken = "${result.recognizedWords}";
+    });
+  }
+
+  void _stopListening() async {
+    await _speechToText.stop();
+    setState(() {});
   }
 
   @override
@@ -76,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       // Add border to make container more visible
                       border: Border.all(color: Colors.white.withOpacity(0.2)),
                     ),
-                    child: const Column(
+                    child: Column(
                       children: [
                         Text(
                           'Hi! Hasib',
@@ -88,7 +114,12 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         SizedBox(height: 8),
                         Text(
-                          'Great job! You can also say, "Hello!"',
+                          _wordSpoken,
+                          // _speechToText.isListening
+                          //     ? "Listening..."
+                          //     : _speechEnabled
+                          //     ? "tap to microphone..."
+                          //     : "speech not available",
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -120,11 +151,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     child: ElevatedButton(
                       onPressed: () {
-                        print("Button pressed"); // Add debug print
+                        _speechToText.isListening ? _stopListening  : _startListening(); // Add debug print
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
-                        padding: const EdgeInsets.symmetric(
+                        padding: EdgeInsets.symmetric(
                           horizontal: 32,
                           vertical: 16,
                         ),
@@ -132,14 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           borderRadius: BorderRadius.circular(30),
                         ),
                       ),
-                      child: const Text(
-                        'Continue',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      child: Icon(_speechToText.isListening ? Icons.mic_off : Icons.mic),
                     ),
                   ),
                 ],
