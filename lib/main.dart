@@ -92,6 +92,17 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
+  void _restartVideo() {
+    _controller.seekTo(Duration.zero); // Reset video to the beginning
+    _controller.play(); // Play the video again
+    setState(() {
+      _showMicIcon = false; // Hide microphone icon
+      _showElevatedButton = false; // Hide elevated button
+      _showGreetingContainer = true; // Show greeting container again
+      _showResultContainer = false;
+    });
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -137,27 +148,6 @@ class _MyHomePageState extends State<MyHomePage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          // SizedBox(height: 8),
-                          // Text(
-                          //   _wordSpoken,
-                          //   // _speechToText.isListening
-                          //   //     ? "Listening..."
-                          //   //     : _speechEnabled
-                          //   //     ? "tap to microphone..."
-                          //   //     : "speech not available",
-                          //   style: TextStyle(
-                          //     color: Colors.white,
-                          //     fontSize: 16,
-                          //     shadows: [
-                          //       Shadow(
-                          //         blurRadius: 4,
-                          //         color: Colors.black,
-                          //         offset: Offset(1, 1),
-                          //       ),
-                          //     ],
-                          //   ),
-                          //   textAlign: TextAlign.center,
-                          // ),
                         ],
                       ),
                     ),
@@ -166,29 +156,30 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
           ),
+          // Microphone Icon
           if (_showMicIcon) // Show microphone icon conditionally
             Positioned(
               bottom: 80, // Position at the bottom
               left: 20,
               right: 20,
               child: Text(
-                  _speechToText.isListening
-                      ? "Listening..."
-                      : _speechEnabled
-                      ? "tap to microphone..."
-                      : "speech not available",
+                _speechToText.isListening
+                    ? "Listening..."
+                    : _speechEnabled
+                    ? "tap to microphone..."
+                    : "speech not available",
                 style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      shadows: [
-                        Shadow(
-                          blurRadius: 4,
-                          color: Colors.black,
-                          offset: Offset(1, 1),
-                        ),
-                      ],
+                  color: Colors.white,
+                  fontSize: 16,
+                  shadows: [
+                    Shadow(
+                      blurRadius: 4,
+                      color: Colors.black,
+                      offset: Offset(1, 1),
                     ),
-                    textAlign: TextAlign.center,
+                  ],
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
           // Microphone Icon
@@ -208,7 +199,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ],
                 ),
-                child : GestureDetector(
+                child: GestureDetector(
                   onTap: () {
                     _speechToText.isListening
                         ? _stopListening()
@@ -219,30 +210,35 @@ class _MyHomePageState extends State<MyHomePage> {
                     width: 60,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      shape: BoxShape.circle
+                      shape: BoxShape.circle,
                     ),
-                    child:  _speechToText.isNotListening ? Icon(
-                      Icons.mic,
-                    ) : Center(child: CircularProgressIndicator(),),
+                    child:
+                        _speechToText.isNotListening
+                            ? Icon( Icons.mic )
+                            : Center(child: CircularProgressIndicator()),
                   ),
                 ),
-                // child: ElevatedButton(
-                //   onPressed: () {
-                //     _speechToText.isListening
-                //         ? _stopListening()
-                //         : _startListening();
-                //   },
-                //   style: ElevatedButton.styleFrom(
-                //     backgroundColor: Colors.blue,
-                //     padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                //     shape: RoundedRectangleBorder(
-                //       borderRadius: BorderRadius.circular(30),
-                //     ),
-                //   ),
-                //   child: Icon(
-                //     _speechToText.isListening ? Icons.mic_off : Icons.mic,
-                //   ),
-                // ),
+              ),
+            ),
+          // Restart Button
+          if (_showMicIcon) // Show elevated button conditionally
+            Positioned(
+              bottom: 20, // Position at the bottom
+              left: 20, // Adjust position to the left of the mic button
+              child: GestureDetector(
+                onTap: () {
+                  _restartVideo();
+                },
+                child: Container(
+                  height: 60,
+                  width: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(.5),
+                    shape: BoxShape.circle,
+                  ),
+                  child:
+                  Icon(Icons.restart_alt)
+                ),
               ),
             ),
           // Elevated Button
@@ -254,7 +250,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: ElevatedButton(
                 onPressed: () {
                   // Define what happens when the elevated button is pressed
-                  print("Elevated button pressed!");
+                  _restartVideo();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
@@ -279,24 +275,31 @@ class _MyHomePageState extends State<MyHomePage> {
                   color: Colors.white70.withOpacity(0.5),
                   borderRadius: BorderRadius.circular(12),
                   // Add border to make container more visible
-                  border: Border.all(
-                    color: Colors.green.withOpacity(0.5),
-                  ),
+                  border: Border.all(color: Colors.green.withOpacity(0.5)),
                 ),
-                // decoration: BoxDecoration(
-                //   color: Colors.green.withOpacity(0.5),
-                //   borderRadius: BorderRadius.circular(12),
-                // ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Icon(_wordSpoken.toLowerCase() == 'hi' ? Icons.check_circle_outline : Icons.cancel_outlined, color: Colors.white,),
+                        Icon(
+                          _wordSpoken.toLowerCase() == 'hi'
+                              ? Icons.check_circle_outline
+                              : Icons.cancel_outlined,
+                          color: Colors.white,
+                        ),
                         Text(
-                          // 'You said: $_wordSpoken',
-                          _wordSpoken.toLowerCase() == 'hi' ? ' perfect' : ' ops',
-                          style: TextStyle(color: _wordSpoken.toLowerCase() == 'hi' ? Colors.green : Colors.red, fontSize: 20, fontWeight: FontWeight.bold),
+                          _wordSpoken.toLowerCase() == 'hi'
+                              ? ' perfect'
+                              : ' ops',
+                          style: TextStyle(
+                            color:
+                                _wordSpoken.toLowerCase() == 'hi'
+                                    ? Colors.green
+                                    : Colors.red,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
