@@ -39,6 +39,8 @@ class _MyHomePageState extends State<MyHomePage> {
   late VideoPlayerController _controller;
   bool _showMicIcon = false; // Flag to show microphone icon
   bool _showResultContainer = false; // Flag to show result container
+  bool _showGreetingContainer = true; // Flag to show greeting container
+  bool _showElevatedButton = false; // Flag to show elevated button
 
   @override
   void initState() {
@@ -53,6 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
             // Video finished playing
             setState(() {
               _showMicIcon = true; // Show microphone icon
+              _showGreetingContainer = false; // Hide greeting container
             });
           }
         });
@@ -79,6 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Timer(const Duration(seconds: 2), () {
       setState(() {
         _showMicIcon = false; // Hide microphone icon
+        _showElevatedButton = true; // Show elevated button
       });
     });
   }
@@ -111,100 +115,199 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    margin: const EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(12),
-                      // Add border to make container more visible
-                      border: Border.all(color: Colors.white.withOpacity(0.2)),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          'Hi! Hasib',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          _wordSpoken,
-                          // _speechToText.isListening
-                          //     ? "Listening..."
-                          //     : _speechEnabled
-                          //     ? "tap to microphone..."
-                          //     : "speech not available",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            shadows: [
-                              Shadow(
-                                blurRadius: 4,
-                                color: Colors.black,
-                                offset: Offset(1, 1),
-                              ),
-                            ],
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  if (_showMicIcon) // Show microphone icon conditionally
-                    Container(
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          _speechToText.isListening
-                              ? _stopListening()
-                              : _startListening();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 32,
-                            vertical: 16,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        child: Icon(
-                          _speechToText.isListening ? Icons.mic_off : Icons.mic,
-                        ),
-                      ),
-                    ),
-                  if (_showResultContainer) // Show result container at the bottom
+                  if (_showGreetingContainer) // Show greeting container conditionally
                     Container(
                       padding: const EdgeInsets.all(16),
                       margin: const EdgeInsets.symmetric(horizontal: 20),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.5),
+                        color: Colors.black.withOpacity(0.5),
                         borderRadius: BorderRadius.circular(12),
+                        // Add border to make container more visible
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.2),
+                        ),
                       ),
-                      child: Text(
-                        'You said: $_wordSpoken',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Hi',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          // SizedBox(height: 8),
+                          // Text(
+                          //   _wordSpoken,
+                          //   // _speechToText.isListening
+                          //   //     ? "Listening..."
+                          //   //     : _speechEnabled
+                          //   //     ? "tap to microphone..."
+                          //   //     : "speech not available",
+                          //   style: TextStyle(
+                          //     color: Colors.white,
+                          //     fontSize: 16,
+                          //     shadows: [
+                          //       Shadow(
+                          //         blurRadius: 4,
+                          //         color: Colors.black,
+                          //         offset: Offset(1, 1),
+                          //       ),
+                          //     ],
+                          //   ),
+                          //   textAlign: TextAlign.center,
+                          // ),
+                        ],
                       ),
                     ),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
           ),
+          if (_showMicIcon) // Show microphone icon conditionally
+            Positioned(
+              bottom: 80, // Position at the bottom
+              left: 20,
+              right: 20,
+              child: Text(
+                  _speechToText.isListening
+                      ? "Listening..."
+                      : _speechEnabled
+                      ? "tap to microphone..."
+                      : "speech not available",
+                style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 4,
+                          color: Colors.black,
+                          offset: Offset(1, 1),
+                        ),
+                      ],
+                    ),
+                    textAlign: TextAlign.center,
+              ),
+            ),
+          // Microphone Icon
+          if (_showMicIcon) // Show microphone icon conditionally
+            Positioned(
+              bottom: 20, // Position at the bottom
+              left: 20,
+              right: 20,
+              child: Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child : GestureDetector(
+                  onTap: () {
+                    _speechToText.isListening
+                        ? _stopListening()
+                        : _startListening();
+                  },
+                  child: Container(
+                    height: 60,
+                    width: 60,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle
+                    ),
+                    child:  _speechToText.isNotListening ? Icon(
+                      Icons.mic,
+                    ) : Center(child: CircularProgressIndicator(),),
+                  ),
+                ),
+                // child: ElevatedButton(
+                //   onPressed: () {
+                //     _speechToText.isListening
+                //         ? _stopListening()
+                //         : _startListening();
+                //   },
+                //   style: ElevatedButton.styleFrom(
+                //     backgroundColor: Colors.blue,
+                //     padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                //     shape: RoundedRectangleBorder(
+                //       borderRadius: BorderRadius.circular(30),
+                //     ),
+                //   ),
+                //   child: Icon(
+                //     _speechToText.isListening ? Icons.mic_off : Icons.mic,
+                //   ),
+                // ),
+              ),
+            ),
+          // Elevated Button
+          if (_showElevatedButton) // Show elevated button conditionally
+            Positioned(
+              bottom: 20, // Position at the bottom
+              left: 20,
+              right: 20,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Define what happens when the elevated button is pressed
+                  print("Elevated button pressed!");
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: Text("Continue"),
+              ),
+            ),
+          // Result Container
+          if (_showResultContainer) // Show result container at the bottom
+            Positioned(
+              bottom: 100, // Position above the mic icon
+              left: 20,
+              right: 20,
+              child: Container(
+                height: 120,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white70.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(12),
+                  // Add border to make container more visible
+                  border: Border.all(
+                    color: Colors.green.withOpacity(0.5),
+                  ),
+                ),
+                // decoration: BoxDecoration(
+                //   color: Colors.green.withOpacity(0.5),
+                //   borderRadius: BorderRadius.circular(12),
+                // ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(_wordSpoken.toLowerCase() == 'hi' ? Icons.check_circle_outline : Icons.cancel_outlined, color: Colors.white,),
+                        Text(
+                          // 'You said: $_wordSpoken',
+                          _wordSpoken.toLowerCase() == 'hi' ? ' perfect' : ' ops',
+                          style: TextStyle(color: _wordSpoken.toLowerCase() == 'hi' ? Colors.green : Colors.red, fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      'You said: $_wordSpoken',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );
